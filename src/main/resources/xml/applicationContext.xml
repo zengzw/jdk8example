@@ -1,0 +1,250 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	 xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+         http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:component-scan base-package="com.test">
+	 	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/> 
+	</context:component-scan>
+
+	<mvc:annotation-driven validator="validator" />
+	<aop:aspectj-autoproxy />
+
+	<bean id="testUser" class="com.test.springmvc.model.TestUser">
+		<property name="age" value="22"></property>
+	</bean>
+
+<!-- 	
+	
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="${redis.maxTotal}" />
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="minIdle" value="${redis.minIdle}" />
+		<property name="timeBetweenEvictionRunsMillis" value="${redis.timeBetweenEvictionRunsMillis}" />
+		<property name="minEvictableIdleTimeMillis" value="${redis.minEvictableIdleTimeMillis}" />
+		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
+	</bean>
+	
+	
+
+	<bean id="redisSentinelConfiguration"
+		class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+		<property name="master">
+			<bean class="org.springframework.data.redis.connection.RedisNode">
+				<property name="name" value="r2"></property>
+			</bean>
+		</property>
+
+		<property name="sentinels">
+			<set>
+				<bean class="org.springframework.data.redis.connection.RedisNode">
+					<constructor-arg name="host" value="${redis.host}"></constructor-arg>
+					<constructor-arg name="port" value="${redis.port}"></constructor-arg>
+				</bean>
+				<bean class="org.springframework.data.redis.connection.RedisNode">
+					<constructor-arg name="host" value="${redisNode1.host}"></constructor-arg>
+					<constructor-arg name="port" value="${redis.port}"></constructor-arg>
+				</bean>
+				<bean class="org.springframework.data.redis.connection.RedisNode">
+					<constructor-arg name="host" value="${redisNode2.host}"></constructor-arg>
+					<constructor-arg name="port" value="${redis.port}"></constructor-arg>
+				</bean>
+			</set>
+		</property>
+	</bean>
+	
+	<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">  
+        <constructor-arg index="0" ref="jedisPoolConfig" />  
+        <constructor-arg index="1">  
+            <list>  
+               <bean name="master" class="redis.clients.jedis.JedisShardInfo">   
+                    <constructor-arg name="host" value="${redis.host}" />   
+                    <constructor-arg name="port" value="${redis.port}" />
+                    <constructor-arg name="timeout" value="${redis.timeout}" />   
+                </bean>
+                <bean name="slaver" class="redis.clients.jedis.JedisShardInfo">  
+                    <constructor-arg name="host" value="${redisNode1.host}" />  
+                    <constructor-arg name="port" value="${redis.port}"/> 
+                    <constructor-arg name="timeout" value="${redis.timeout}" /> 
+                </bean>
+                <bean name="slaver" class="redis.clients.jedis.JedisShardInfo">  
+                    <constructor-arg name="host" value="${redisNode2.host}" />  
+                    <constructor-arg name="port" value="${redis.port}"/>
+                    <constructor-arg name="timeout" value="${redis.timeout}" />  
+                </bean>   
+            </list>  
+        </constructor-arg>  
+    </bean> 
+	
+	<bean id="shardedJedisService" class="com.dtds.platform.data.redis.sharded.ShardedJedisService">
+		<property name="shardedJedisPool" ref="shardedJedisPool"></property>
+	</bean>
+
+	<bean id="jeidsConnectionFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<constructor-arg ref="redisSentinelConfiguration" />
+		<property name="poolConfig" ref="jedisPoolConfig" />
+		<property name="timeout" value="${redis.timeout}"></property>
+	</bean>
+
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+		p:connection-factory-ref="jeidsConnectionFactory" />
+
+	<bean id="redisService" class="com.dtds.platform.data.redis.RedisSlave">
+		<property name="redistemplate" ref="redisTemplate"></property>
+	</bean> 
+ -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<!-- <value>text/plain;charset=UTF-8</value> -->
+							<value>text/html;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+				<bean
+					class="org.springframework.http.converter.ResourceHttpMessageConverter"></bean>
+				<bean
+					class="org.springframework.http.converter.ByteArrayHttpMessageConverter"></bean>
+				<bean
+					class="org.springframework.http.converter.xml.SourceHttpMessageConverter"></bean>
+				<bean
+					class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"></bean>
+				<bean
+					class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"></bean>
+				<bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 加载配置配置文件，这样可以在xml中读取配置文件内容 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/configuration/messages.properties</value>
+				<value>classpath:/configuration/redis.properties</value>
+				<value>classpath:/configuration/rpc_client_config.properties</value>
+				<value>classpath:/configuration/rpc_server_config.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- RPC 服务主持 -->
+ 
+<!-- 	<import resource="rpc-server-config.xml"/>  -->
+	
+	<!--  RPC 客户端 -->
+	   <import resource="rpc-client-config.xml"/>   
+
+	<!-- 拦截器 -->
+	<bean name="myIntercepter" class="com.test.springmvc.intercept.MyIntercepter" />
+	<aop:config proxy-target-class="true">
+		<aop:pointcut expression="execution(* com.test.springmvc.console..*(..))"
+			id="testPointcut" />
+		<aop:advisor advice-ref="myIntercepter" pointcut-ref="testPointcut" />
+	</aop:config>
+
+
+	<!-- <bean id="cacheServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator"> 
+		<property name="beanNames"> <list> <value>*Service</value> </list> </property> 
+		<property name="interceptorNames"> <list> <value>methodPointCut</value> </list> 
+		</property> </bean> -->
+
+
+	<!-- 定义切入点 -->
+	<!-- <bean id="methodPointCut" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor"> 
+		<property name="advice" ref="myIntercepter"></property> .表示符合任何单一字元 +表示符合前一个字元一次或多次 
+		*表示符合前一个字元零次或多次 \Escape任何Regular expression使用到的符号 .*表示前面的前缀(包括包名) 表示print方法 
+		<property name="patterns"> <list> <value>${printMethod}</value> </list> </property> 
+		</bean> -->
+
+
+
+
+
+
+	<!-- 处理i18n资源文件 -->
+	<bean id="messageSource"
+		class="com.test.commom.web.source.spring.WildcardsMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath*:META-INF/i18n/**</value>
+			</list>
+		</property>
+		<property name="fileEncodings" value="utf-8" />
+		<property name="useCodeAsDefaultMessage" value="true" />
+		<property name="cacheSeconds" value="1000000" />
+	</bean>
+
+	<bean id="messageSourceService"
+		class="com.test.commom.web.source.service.impl.MessageSourceServiceImpl">
+		<property name="messageSource" ref="messageSource" />
+	</bean>
+
+	<!--  spring quartz 整合  -->
+	<bean id="schedulerFactoryBean"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />
+
+	<!-- 消息国家化 -->
+	<!-- <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"> 
+		<property name="basename" value="/WEB-INF/configuration/messages" /> <property 
+		name="fileEncodings" value="utf-8" /> <property name="cacheSeconds" value="1000000" 
+		/> </bean> -->
+
+
+	<!-- 以下 validator ConversionService 在使用 mvc:annotation-driven 会 自动注册 -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+		<!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
+		<property name="validationMessageSource" ref="messageSource" />
+	</bean>
+
+
+	<!-- 静态资源文件的映射 -->
+	<mvc:resources location="/WEB-INF/media/js/" mapping="/js/**" />
+	<mvc:resources location="/WEB-INF/media/css/" mapping="/css/**" />
+
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"> 
+		<property name="messageConverters"> <list> <bean class="org.springframework.http.converter.StringHttpMessageConverter"> 
+		<property name="supportedMediaTypes"> <list> <value>text/html;charset=UTF-8</value> 
+		</list> </property> </bean> <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean> 
+		</list> </property> </bean> -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/pages/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+	</bean>
+
+		<!-- redis session -->
+	<!-- 	<import resource="redis-session.xml"/> -->
+
+		<!-- lts distribute timer -->
+	<!-- 	<import resource="lts-timer.xml"/> -->
+
+
+</beans>
